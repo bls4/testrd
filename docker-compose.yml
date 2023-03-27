@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    networks:
+      - openvpn_net
+    depends_on:
+      - openvpn
+    restart: always
+  
+  openvpn:
+    cap_add:
+      - NET_ADMIN
+    image: dperson/openvpn-client
+    volumes:
+      - /path/to/config.ovpn:/vpn/config.ovpn
+    networks:
+      - openvpn_net
+    environment:
+      - VPN_USERNAME=your_username
+      - VPN_PASSWORD=your_password
+    restart: always
+
+networks:
+  openvpn_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
